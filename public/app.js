@@ -1,13 +1,64 @@
-$.getJSON("/articles", function(data) {
-  // For each one
-  for (var i = 0; i < data.length; i++) {
-    // Display the apropos information on the page
-		var articleCard = $("<div>").addClass("card articlecard");
-		var head = $("<div>").addClass("card-header").text(data[i].title);
-		var body = $("<div>").addClass("card-body").text(data[i].link);
-		articleCard.append(head);
-		articleCard.append(body);
-    $("#articles").append(articleCard);
+$.get('/articles', function(data) {
+  if (data.length == 0) $('#articles').text('No Articles');
+  else {
+    // For each one
+    for (var i = 0; i < data.length; i++) {
+      // Display the apropos information on the page
+      var articleCard = $('<div>').addClass('card articlecard');
+      var head = $('<div>').addClass('card-header');
+      head.append(
+        $('<a>')
+          .text(data[i].title)
+          .attr('href', data[i].link)
+      );
+      head.append(
+        $('<button>')
+          .addClass('ml-2 btn btn-primary btn-sm viewcommentsbtn')
+          .attr({type: 'button', 'data-id': data[i]._id})
+          .text('view comments')
+      );
+
+      var body = $('<div>').addClass('card-body');
+      var addCommentAndSave = $('<div>').addClass('addcommmentsaveform');
+      var theform = $('<form>').attr({
+        method: 'post',
+        action: '/comment/' + data[i]._id
+      });
+      var formbody = $('<div>').addClass('form-group row');
+      theform.append(formbody);
+      var formlabel = $('<label>')
+        .addClass('col-sm-3 col-form-label')
+        .text('Your Comment: ')
+        .attr('for', 'articlecomment' + data[i]._id);
+      formbody.append(formlabel);
+      formbody.append(
+        $('<div>')
+          .addClass('col-sm-6')
+          .append(
+            $('<input>')
+              .addClass('form-control')
+              .attr({
+								name: "comment",
+                type: 'text',
+                id: 'articlecomment' + data[i]._id
+              })
+          )
+      );
+      var submitbtndiv = $('<div>').addClass('col-sm-3');
+      submitbtndiv.append(
+        $('<button>')
+          .attr('type', 'submit')
+          .addClass('btn btn-success')
+          .text('add comment')
+      );
+      formbody.append(submitbtndiv);
+      addCommentAndSave.append(theform);
+      body.append(addCommentAndSave);
+
+      articleCard.append(head);
+      articleCard.append(body);
+      //articleCard.append(body);
+      $('#articles').append(articleCard);
+    }
   }
 });
-

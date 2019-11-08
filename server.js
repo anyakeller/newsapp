@@ -29,7 +29,7 @@ app.use(express.static('public'));
 // Connect to the Mongo DB
 var MONGODB_URI =
   process.env.MONGODB_URI || 'mongodb://localhost/mongoHeadlines';
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+mongoose.connect(MONGODB_URI, {useNewUrlParser: true});
 
 // Routes
 app.get('/', function(req, res) {});
@@ -44,9 +44,11 @@ app.get('/scrape', function(req, res) {
       result.title = $(element)
         .children()
         .text();
-      result.link = $(element)
-        .find('a')
-        .attr('href');
+      result.link =
+        'https://www.nytimes.com' +
+        $(element)
+          .find('a')
+          .attr('href');
 
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
@@ -65,9 +67,33 @@ app.get('/scrape', function(req, res) {
 });
 //clear db
 app.get('/cleararticles', function(req, res) {
-	console.log(db.Article.remove({}).exec());
-	console.log("halp");
-	res.send("yeah");
+  console.log(db.Article.remove({}).exec());
+  console.log('halp');
+  res.send('yeah');
+});
+
+app.post('/api/savedarticles', function(req, res) {
+  var result = {};
+  result.title = req.body.title;
+  result.link = req.body.link;
+  // Create a new Article using the `result` object built from scraping
+  db.Article.create(result)
+    .then(function(dbArticle) {
+      console.log(dbArticle);
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+});
+
+app.get('/articles/:id', function(req, res) {
+  db.Article.find({_id: req.params.id}, function(err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(data);
+    }
+  });
 });
 
 app.get('/articles', function(req, res) {
@@ -78,6 +104,28 @@ app.get('/articles', function(req, res) {
       // Otherwise, send the result of this query to the browser
       res.json(data);
     }
+  });
+});
+
+app.post('/comment/:id', function(req, res) {
+  db.Comment.create({comment: req.body.comment}, function(err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      db.Article.update({_id: req.params.id}, function(err, data) {
+        if (err) console.log(err);
+        else {
+          //res.json(data);
+        }
+      });
+    }
+  });
+});
+
+app.get('/comment', function(req, res) {
+  db.Comment.find({}, function(err, data) {
+    if (err) console.log(err);
+    else res.json(data);
   });
 });
 
