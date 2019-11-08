@@ -32,28 +32,45 @@ var MONGODB_URI =
 mongoose.connect(MONGODB_URI);
 
 // Routes
+app.get("/",function(req,res){
+})
 
-app.get('/articles', function(req, res) {
+app.get('/scrape', function(req, res) {
   axios.get('https://www.nytimes.com').then(function(response) {
     var $ = cheerio.load(response.data);
     var results = [];
-
     $('article').each(function(i, element) {
-      var title = $(element)
+      var result = {};
+      result.title = $(element)
         .children()
         .text();
-      var link = $(element)
+      result.link = $(element)
         .find('a')
         .attr('href');
 
-      // Save these results in an object that we'll push into the results array we defined earlier
-      results.push({
-        title: title,
-        link: link
-      });
+      // Create a new Article using the `result` object built from scraping
+			db.Article.create(result)
+				.then(function(dbArticle) {
+					console.log(dbArticle);
+				})
+				.catch(function(err) {
+					console.log(err);
+				});
+      results.push(result);
+      console.log(result);
     });
-    console.log(results);
-    res.json(results);
+		res.json(results);
+		//res.send('Scrape Complete');
+  });
+});
+app.get('/articles', function(req, res) {
+  db.Article.find({}, function(err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      // Otherwise, send the result of this query to the browser
+      res.json(data);
+    }
   });
 });
 
