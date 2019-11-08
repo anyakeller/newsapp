@@ -29,12 +29,12 @@ app.use(express.static('public'));
 // Connect to the Mongo DB
 var MONGODB_URI =
   process.env.MONGODB_URI || 'mongodb://localhost/mongoHeadlines';
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // Routes
-app.get("/",function(req,res){
-})
+app.get('/', function(req, res) {});
 
+// scrape articles into db
 app.get('/scrape', function(req, res) {
   axios.get('https://www.nytimes.com').then(function(response) {
     var $ = cheerio.load(response.data);
@@ -49,20 +49,27 @@ app.get('/scrape', function(req, res) {
         .attr('href');
 
       // Create a new Article using the `result` object built from scraping
-			db.Article.create(result)
-				.then(function(dbArticle) {
-					console.log(dbArticle);
-				})
-				.catch(function(err) {
-					console.log(err);
-				});
+      db.Article.create(result)
+        .then(function(dbArticle) {
+          console.log(dbArticle);
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
       results.push(result);
       console.log(result);
     });
-		res.json(results);
-		//res.send('Scrape Complete');
+    //res.json(results);
+    res.send('Scrape Complete');
   });
 });
+//clear db
+app.get('/cleararticles', function(req, res) {
+	console.log(db.Article.remove({}).exec());
+	console.log("halp");
+	res.send("yeah");
+});
+
 app.get('/articles', function(req, res) {
   db.Article.find({}, function(err, data) {
     if (err) {
