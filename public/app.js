@@ -50,6 +50,15 @@ $.get('/articles', function(data) {
       addCommentAndSave.append(theform);
       body.append(addCommentAndSave);
 
+      var currentComments = $('<div>').addClass('viewcomment');
+      if (data[i].comment.length > 0) {
+        //console.log(data[i].comment);
+        for (var j = 0; j < data[i].comment.length; j++) {
+          currentComments.append($('<p>').text(data[i].comment[j].comment));
+        }
+      }
+      body.append(currentComments);
+
       articleCard.append(head);
       articleCard.append(body);
       //articleCard.append(body);

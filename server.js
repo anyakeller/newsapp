@@ -98,7 +98,7 @@ app.get('/articles/:id', function(req, res) {
 });
 
 app.get('/articles', function(req, res) {
-  db.Article.find({}, function(err, data) {
+  db.Article.find({}).populate("comment").exec( function(err, data) {
     if (err) {
       console.log(err);
     } else {
