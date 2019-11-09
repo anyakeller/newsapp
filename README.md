@@ -4,7 +4,7 @@ A news app with user commenting
 
 
 ### Screenshot
-<img src="nytscrapescreenshot.png.png" width="500">
+<img src="nytscrapescreenshot.png" width="500">
 
 
 ### Required to run
