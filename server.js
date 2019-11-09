@@ -66,8 +66,9 @@ app.get('/scrape', function(req, res) {
   });
 });
 //clear db
-app.get('/cleararticles', function(req, res) {
+app.get('/cleareverything', function(req, res) {
   console.log(db.Article.remove({}).exec());
+  console.log(db.Comment.remove({}).exec());
   console.log('halp');
   res.send('yeah');
 });
@@ -107,16 +108,27 @@ app.get('/articles', function(req, res) {
   });
 });
 
+app.get('/comment/:id', function(req, res) {
+  db.Comment.find({_id: req.params.id}, function(err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(data);
+    }
+  });
+});
+
+
 app.post('/comment/:id', function(req, res) {
   db.Comment.create({comment: req.body.comment}, function(err, data) {
     if (err) {
       console.log(err);
     } else {
-			console.log(data);
       db.Article.update({_id: req.params.id},{$push: {comment:data._id}}, function(err, articledata) {
         if (err) console.log(err);
         else {
-					res.json(data);
+					res.send(data._id);
+					//res.json(data);
         }
       });
     }
@@ -125,13 +137,6 @@ app.post('/comment/:id', function(req, res) {
 
 app.get('/comment', function(req, res) {
   db.Comment.find({}, function(err, data) {
-    if (err) console.log(err);
-    else res.json(data);
-  });
-});
-
-app.get('/comment/:id', function(req, res) {
-  db.Comment.find({_id:req.params.id}, function(err, data) {
     if (err) console.log(err);
     else res.json(data);
   });

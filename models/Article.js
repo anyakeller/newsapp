@@ -2,7 +2,6 @@ var mongoose = require("mongoose");
 // Save a reference to the Schema constructor
 var Schema = mongoose.Schema;
 
-var minischema = new Schema({commentid:Schema.Types.ObjectId});
 
 var ArticleSchema = new Schema({
   title: {
@@ -13,10 +12,10 @@ var ArticleSchema = new Schema({
     type: String,
     required: true
   } ,
-	comment: {
-		type: [minischema],
+	comment: [{
+		type: Schema.Types.ObjectId,
 		ref: "Comment"
-	}
+	}]
 });
 
 // This creates our model from the above schema, using mongoose's model method

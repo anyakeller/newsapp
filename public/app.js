@@ -13,16 +13,8 @@ $.get('/articles', function(data) {
       );
 
       var body = $('<div>').addClass('card-body');
-      var currentComment = $('<div>').addClass('viewcomment');
-      if (data[i].comment) {
-				console.log(data[i].comment);
-        $.get('/comment/' + data[i].comment, function(commentdata) {
-          currentComment.append($("<p>").text(commentdata.comment));
-        });
-      }
-			body.append(currentComment);
-      
-			var addCommentAndSave = $('<div>').addClass('addcommmentsaveform');
+
+      var addCommentAndSave = $('<div>').addClass('addcommmentsaveform');
       var theform = $('<form>').attr({
         method: 'post',
         action: '/comment/' + data[i]._id
