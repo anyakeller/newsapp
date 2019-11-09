@@ -67,3 +67,10 @@ $.get('/articles', function(data) {
     }
   }
 });
+
+$('#scrape').on('click', function() {
+  $.get('/scrape', function() {
+    console.log('scraped');
+		location.reload(true);
+  });
+});

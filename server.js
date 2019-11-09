@@ -49,20 +49,27 @@ app.get('/scrape', function(req, res) {
         $(element)
           .find('a')
           .attr('href');
-
-      // Create a new Article using the `result` object built from scraping
-      db.Article.create(result)
-        .then(function(dbArticle) {
-          console.log(dbArticle);
-        })
-        .catch(function(err) {
-          console.log(err);
-        });
-      results.push(result);
+      db.Article.find({link: result.link}, function(err,data) {
+        if (data.length == 0) {
+          // Create a new Article using the `result` object built from scraping
+          db.Article.create(result)
+            .then(function(dbArticle) {
+              //console.log(dbArticle);
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+          results.push(result);
+        }
+				else {
+					console.log(data);
+				}
+      });
       console.log(result);
     });
     //res.json(results);
-    res.send('Scrape Complete');
+    //res.send('Scrape Complete');
+    res.redirect('/');
   });
 });
 //clear db
@@ -98,14 +105,16 @@ app.get('/articles/:id', function(req, res) {
 });
 
 app.get('/articles', function(req, res) {
-  db.Article.find({}).populate("comment").exec( function(err, data) {
-    if (err) {
-      console.log(err);
-    } else {
-      // Otherwise, send the result of this query to the browser
-      res.json(data);
-    }
-  });
+  db.Article.find({})
+    .populate('comment')
+    .exec(function(err, data) {
+      if (err) {
+        console.log(err);
+      } else {
+        // Otherwise, send the result of this query to the browser
+        res.json(data);
+      }
+    });
 });
 
 app.get('/comment/:id', function(req, res) {
@@ -118,20 +127,23 @@ app.get('/comment/:id', function(req, res) {
   });
 });
 
-
 app.post('/comment/:id', function(req, res) {
   db.Comment.create({comment: req.body.comment}, function(err, data) {
     if (err) {
       console.log(err);
     } else {
-      db.Article.update({_id: req.params.id},{$push: {comment:data._id}}, function(err, articledata) {
-        if (err) console.log(err);
-        else {
-					//res.send(data._id);
-					//res.json(data);
-					res.redirect("/");
+      db.Article.update(
+        {_id: req.params.id},
+        {$push: {comment: data._id}},
+        function(err, articledata) {
+          if (err) console.log(err);
+          else {
+            //res.send(data._id);
+            //res.json(data);
+            res.redirect('/');
+          }
         }
-      });
+      );
     }
   });
 });
