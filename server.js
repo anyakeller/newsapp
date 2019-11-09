@@ -127,8 +127,9 @@ app.post('/comment/:id', function(req, res) {
       db.Article.update({_id: req.params.id},{$push: {comment:data._id}}, function(err, articledata) {
         if (err) console.log(err);
         else {
-					res.send(data._id);
+					//res.send(data._id);
 					//res.json(data);
+					res.redirect("/");
         }
       });
     }

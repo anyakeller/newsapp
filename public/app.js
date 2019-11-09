@@ -53,6 +53,7 @@ $.get('/articles', function(data) {
       var currentComments = $('<div>').addClass('viewcomment');
       if (data[i].comment.length > 0) {
         //console.log(data[i].comment);
+        currentComments.append($('<h4>').text('Other Comments:'));
         for (var j = 0; j < data[i].comment.length; j++) {
           currentComments.append($('<p>').text(data[i].comment[j].comment));
         }
