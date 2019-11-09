@@ -16,3 +16,6 @@ Mongo
 ` $mongod`
 In another shell
 ` $node server`
+In app at home route
+go to /cleareverything to clear the database
+got to /scrape to re scrape the times
