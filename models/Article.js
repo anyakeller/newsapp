@@ -1,7 +1,8 @@
 var mongoose = require("mongoose");
-
 // Save a reference to the Schema constructor
 var Schema = mongoose.Schema;
+
+var minischema = new Schema({commentid:Schema.Types.ObjectId});
 
 var ArticleSchema = new Schema({
   title: {
@@ -13,7 +14,7 @@ var ArticleSchema = new Schema({
     required: true
   } ,
 	comment: {
-		type: Schema.Types.ObjectId,
+		type: [minischema],
 		ref: "Comment"
 	}
 });

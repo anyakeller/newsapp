@@ -11,15 +11,18 @@ $.get('/articles', function(data) {
           .text(data[i].title)
           .attr('href', data[i].link)
       );
-      head.append(
-        $('<button>')
-          .addClass('ml-2 btn btn-primary btn-sm viewcommentsbtn')
-          .attr({type: 'button', 'data-id': data[i]._id})
-          .text('view comments')
-      );
 
       var body = $('<div>').addClass('card-body');
-      var addCommentAndSave = $('<div>').addClass('addcommmentsaveform');
+      var currentComment = $('<div>').addClass('viewcomment');
+      if (data[i].comment) {
+				console.log(data[i].comment);
+        $.get('/comment/' + data[i].comment, function(commentdata) {
+          currentComment.append($("<p>").text(commentdata.comment));
+        });
+      }
+			body.append(currentComment);
+      
+			var addCommentAndSave = $('<div>').addClass('addcommmentsaveform');
       var theform = $('<form>').attr({
         method: 'post',
         action: '/comment/' + data[i]._id
@@ -38,7 +41,7 @@ $.get('/articles', function(data) {
             $('<input>')
               .addClass('form-control')
               .attr({
-								name: "comment",
+                name: 'comment',
                 type: 'text',
                 id: 'articlecomment' + data[i]._id
               })
